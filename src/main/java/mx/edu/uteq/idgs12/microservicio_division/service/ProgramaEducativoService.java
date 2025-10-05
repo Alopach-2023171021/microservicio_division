@@ -1,7 +1,6 @@
 package mx.edu.uteq.idgs12.microservicio_division.service;
 
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,61 +11,18 @@ import mx.edu.uteq.idgs12.microservicio_division.entity.Division;
 import mx.edu.uteq.idgs12.microservicio_division.entity.ProgramaEducativo;
 import mx.edu.uteq.idgs12.microservicio_division.repository.DivisionRepository;
 import mx.edu.uteq.idgs12.microservicio_division.repository.ProgramaEducativoRepository;
-import mx.edu.uteq.idgs12.microservicio_divisio.dto.ProgramaEducativoToViewListDto;
-import mx.edu.uteq.idgs12.microservicio_division.ProgramaEducativo;
-import mx.edu.uteq.idgs12.microservicio_division.Division;
 
 @Service
 public class ProgramaEducativoService {
 
-
     @Autowired
     private DivisionRepository divisionRepository;
- // Listar todos los programas educativos
-    public List<ProgramaEducativoToViewListDto> findAll() {
-        List<ProgramaEducativo> programas = programaEducativoRepository.findAll();
-        List<ProgramaEducativoToViewListDto> resultado = new ArrayList<>();
 
-        for (ProgramaEducativo programa : programas) {
-            ProgramaEducativoToViewListDto dto = new ProgramaEducativoToViewListDto();
-            dto.setProgramaId(programa.getId());
-            dto.setPrograma(programa.getPrograma());
-            dto.setActivo(programa.isActivo());
-
-            if (programa.getDivision() != null) {
-                dto.setDivisionNombre(programa.getDivision().getNombre());
-                dto.setDivisionId(programa.getDivision().getId());
-            }
-
-            resultado.add(dto);
-        }
-
-        return resultado;
-    }
-
-    // Buscar un programa educativo por ID
-    public ProgramaEducativoToViewListDto findById(Long id) {
-        ProgramaEducativo programa = programaEducativoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Programa Educativo no encontrado con ID: " + id));
-
-        ProgramaEducativoToViewListDto dto = new ProgramaEducativoToViewListDto();
-        dto.setProgramaId(programa.getId());
-        dto.setPrograma(programa.getPrograma());
-        dto.setActivo(programa.isActivo());
-
-        if (programa.getDivision() != null) {
-            dto.setDivisionNombre(programa.getDivision().getNombre());
-            dto.setDivisionId(programa.getDivision().getId());
-        }
-
-        return dto;
+    @Autowired
     private ProgramaEducativoRepository programaEducativoRepository;
 
-    @Autowired
-    private DivisionRepository divisionRepository;
-
-   //lista de programa educativo
-   public List<ProgramaEducativoToViewListDto> findAll() {
+    // Listar todos los programas educativos
+    public List<ProgramaEducativoToViewListDto> findAll() {
         List<ProgramaEducativo> programas = programaEducativoRepository.findAll();
         List<ProgramaEducativoToViewListDto> resultado = new ArrayList<>();
 
@@ -77,7 +33,14 @@ public class ProgramaEducativoService {
         return resultado;
     }
 
-    //Agregar un programa educativo
+    // Buscar un programa educativo por ID
+    public ProgramaEducativoToViewListDto findById(Long id) {
+        ProgramaEducativo programa = programaEducativoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Programa Educativo no encontrado con ID: " + id));
+        return mapToDto(programa);
+    }
+
+    // Agregar un programa educativo
     public ProgramaEducativoToViewListDto create(ProgramaEducativoToCreateDto dto) {
         ProgramaEducativo entity = new ProgramaEducativo();
         entity.setPrograma(dto.getPrograma());
@@ -92,7 +55,8 @@ public class ProgramaEducativoService {
         ProgramaEducativo saved = programaEducativoRepository.save(entity);
         return mapToDto(saved);
     }
-    //Editar un programa educativo
+
+    // Editar un programa educativo
     public ProgramaEducativoToViewListDto update(Long id, ProgramaEducativoToUpdateDto dto) {
         ProgramaEducativo programa = programaEducativoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Programa Educativo no encontrado con ID: " + id));
@@ -109,7 +73,7 @@ public class ProgramaEducativoService {
         ProgramaEducativo updated = programaEducativoRepository.save(programa);
         return mapToDto(updated);
     }
-    
+
     // Eliminar un programa educativo
     public void delete(Long id) {
         if (!programaEducativoRepository.existsById(id)) {
@@ -117,19 +81,19 @@ public class ProgramaEducativoService {
         }
         programaEducativoRepository.deleteById(id);
     }
+
     // Conversión de entidad a DTO
-        private ProgramaEducativoToViewListDto mapToDto(ProgramaEducativo programa) {
-            ProgramaEducativoToViewListDto dto = new ProgramaEducativoToViewListDto();
-            dto.setProgramaId(programa.getId());
-            dto.setPrograma(programa.getPrograma());
-            dto.setActivo(programa.isActivo());
+    private ProgramaEducativoToViewListDto mapToDto(ProgramaEducativo programa) {
+        ProgramaEducativoToViewListDto dto = new ProgramaEducativoToViewListDto();
+        dto.setProgramaId(programa.getId());
+        dto.setPrograma(programa.getPrograma());
+        dto.setActivo(programa.isActivo());
 
-            if (programa.getDivision() != null) {
-                dto.setDivisionId(programa.getDivision().getId());
-                dto.setDivisionNombre(programa.getDivision().getNombre());
-            }
-
-            return dto;
+        if (programa.getDivision() != null) {
+            dto.setDivisionId(programa.getDivision().getId());
+            dto.setDivisionNombre(programa.getDivision().getNombre());
         }
-    
+
+        return dto;
+    }
 }

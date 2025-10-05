@@ -13,7 +13,7 @@ public class ProgramaEducativo {
     private Long id;
     private String programa;
     private boolean activo;
-    
+
     @ManyToOne
     @JoinColumn(name = "division_id")
     private Division division;

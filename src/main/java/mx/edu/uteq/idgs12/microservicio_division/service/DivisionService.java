@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import mx.edu.uteq.idgs12.microservicio_division.dto.DivisionToCreateDto;
+import mx.edu.uteq.idgs12.microservicio_division.dto.DivisionToUpdateDto;
 import mx.edu.uteq.idgs12.microservicio_division.dto.DivisionToViewListDto;
 import mx.edu.uteq.idgs12.microservicio_division.entity.Division;
 import mx.edu.uteq.idgs12.microservicio_division.entity.ProgramaEducativo;
@@ -13,10 +15,10 @@ import mx.edu.uteq.idgs12.microservicio_division.repository.DivisionRepository;
 
 @Service
 public class DivisionService {
-    
+
     @Autowired
     private DivisionRepository divisionRepository;
-    
+
     // Listar todas las divisiones
 
     public List<DivisionToViewListDto> findAll() {
@@ -44,6 +46,8 @@ public class DivisionService {
     public DivisionToViewListDto findById(Long id) {
         Division division = divisionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("División no encontrada con ID: " + id));
+        return convertirADto(division);
+    }
 
     // Borrar una división
     public void delete(Long id) {
@@ -76,7 +80,7 @@ public class DivisionService {
     }
 
     // Convertir entidad a DTO
-     private DivisionToViewListDto convertirADto(Division division) {
+    private DivisionToViewListDto convertirADto(Division division) {
         DivisionToViewListDto dto = new DivisionToViewListDto();
         dto.setDivisionId(division.getId());
         dto.setNombre(division.getNombre());
@@ -94,5 +98,54 @@ public class DivisionService {
         return dto;
     }
 
-    
+    // Crear una nueva división
+    public DivisionToViewListDto create(DivisionToCreateDto dto) {
+        Division entity = new Division();
+        entity.setNombre(dto.getNombre());
+        entity.setImage(dto.getImage());
+        entity.setActivo(dto.isActivo());
+
+        Division saved = divisionRepository.save(entity);
+
+        DivisionToViewListDto resultado = new DivisionToViewListDto();
+        resultado.setDivisionId(saved.getId());
+        resultado.setNombre(saved.getNombre());
+        resultado.setProgramasEducativos(new ArrayList<>());
+
+        return resultado;
+    }
+
+    // Actualizar una división existente
+    public DivisionToViewListDto update(Long id, DivisionToUpdateDto dto) {
+        Division division = divisionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("División no encontrada con ID: " + id));
+
+        division.setNombre(dto.getNombre());
+        division.setImage(dto.getImage());
+        division.setActivo(dto.isActivo());
+
+        Division updated = divisionRepository.save(division);
+
+        DivisionToViewListDto resultado = new DivisionToViewListDto();
+        resultado.setDivisionId(updated.getId());
+        resultado.setNombre(updated.getNombre());
+
+        if (updated.getProgramaEducativo() != null) {
+            List<String> programas = new ArrayList<>();
+            for (ProgramaEducativo prog : updated.getProgramaEducativo()) {
+                programas.add(prog.getPrograma());
+            }
+            resultado.setProgramasEducativos(programas);
+        } else {
+            resultado.setProgramasEducativos(new ArrayList<>());
+        }
+
+        return resultado;
+    }
+
+    // Test
+    public void test() {
+        System.out.println("Test");
+    }
+
 }

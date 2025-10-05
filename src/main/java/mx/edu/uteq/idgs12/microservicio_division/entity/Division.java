@@ -18,5 +18,5 @@ public class Division {
 
     @OneToMany(mappedBy = "division", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProgramaEducativo> programaEducativo;
-    
+
 }
