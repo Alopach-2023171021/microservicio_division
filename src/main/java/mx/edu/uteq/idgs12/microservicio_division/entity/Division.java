@@ -6,18 +6,17 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "divisiones")
+@Table(name = "division")
 public class Division {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String nombre;
     private String image;
-    private boolean activo;
+    private String activo; 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "division_id")
-    private List<ProgramaEducativo> programaEducativos;
-
+    @OneToMany(mappedBy = "division", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProgramaEducativo> programaEducativo;
 }
