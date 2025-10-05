@@ -2,6 +2,7 @@ package mx.edu.uteq.idgs12.microservicio_division.controller;
 
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,46 +18,43 @@ import mx.edu.uteq.idgs12.microservicio_division.dto.ProgramaEducativoToViewList
 import mx.edu.uteq.idgs12.microservicio_division.service.ProgramaEducativoService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/programas")
+@CrossOrigin(origins = "*")
+
 public class ProgramaEducativoController {
 
     @Autowired
     private ProgramaEducativoService programaEducativoService;
 
-    // listar todos los programas educativos
+    // Listar todos los programas educativos
     @GetMapping
-    public List<ProgramaEducativoToViewListDto> listarProgramas() {
-        return programaEducativoService.findAll();
-    }
-
-    // Agregar un nuevo programa educativo
-    @PostMapping
-    public ProgramaEducativoToViewListDto crearPrograma(@RequestBody ProgramaEducativoToCreateDto dto) {
-        return programaEducativoService.create(dto);
-    }
-
-    // editar un programa educativo
-    @PutMapping("/{id}")
-    public ProgramaEducativoToViewListDto actualizarPrograma(
-            @PathVariable Long id,
-            @RequestBody ProgramaEducativoToUpdateDto dto) {
-        return programaEducativoService.update(id, dto);
-    }
-    // Eliminar un programa educativo
-
-    @GetMapping("/programas")
     public List<ProgramaEducativoToViewListDto> findAll() {
         return programaEducativoService.findAll();
     }
 
-    @GetMapping("/programas/{id}")
+    // Buscar programa por ID
+    @GetMapping("/{id}")
     public ProgramaEducativoToViewListDto findById(@PathVariable Long id) {
         return programaEducativoService.findById(id);
     }
 
-    @DeleteMapping("/programas/{id}")
+    // Agregar un nuevo programa educativo
+    @PostMapping
+    public ProgramaEducativoToViewListDto create(@RequestBody ProgramaEducativoToCreateDto dto) {
+        return programaEducativoService.create(dto);
+    }
+
+    // Editar un programa educativo
+    @PutMapping("/{id}")
+    public ProgramaEducativoToViewListDto update(
+            @PathVariable Long id,
+            @RequestBody ProgramaEducativoToUpdateDto dto) {
+        return programaEducativoService.update(id, dto);
+    }
+
+    // Eliminar un programa educativo
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         programaEducativoService.delete(id);
     }
-
 }

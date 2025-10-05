@@ -20,24 +20,11 @@ public class DivisionService {
     private DivisionRepository divisionRepository;
 
     // Listar todas las divisiones
-
     public List<DivisionToViewListDto> findAll() {
         List<Division> divisiones = divisionRepository.findAll();
         List<DivisionToViewListDto> resultado = new ArrayList<>();
         for (Division division : divisiones) {
-            DivisionToViewListDto dto = new DivisionToViewListDto();
-            dto.setDivisionId(division.getId());
-            dto.setNombre(division.getNombre());
-            if (division.getProgramaEducativo() != null) {
-                List<String> programas = new ArrayList<>();
-                for (ProgramaEducativo prog : division.getProgramaEducativo()) {
-                    programas.add(prog.getPrograma());
-                }
-                dto.setProgramasEducativos(programas);
-            } else {
-                dto.setProgramasEducativos(new ArrayList<>());
-            }
-            resultado.add(dto);
+            resultado.add(convertirADto(division));
         }
         return resultado;
     }
@@ -79,25 +66,6 @@ public class DivisionService {
         return convertirADto(updated);
     }
 
-    // Convertir entidad a DTO
-    private DivisionToViewListDto convertirADto(Division division) {
-        DivisionToViewListDto dto = new DivisionToViewListDto();
-        dto.setDivisionId(division.getId());
-        dto.setNombre(division.getNombre());
-
-        if (division.getProgramaEducativo() != null) {
-            List<String> programas = new ArrayList<>();
-            for (ProgramaEducativo prog : division.getProgramaEducativo()) {
-                programas.add(prog.getPrograma());
-            }
-            dto.setProgramasEducativos(programas);
-        } else {
-            dto.setProgramasEducativos(new ArrayList<>());
-        }
-
-        return dto;
-    }
-
     // Crear una nueva división
     public DivisionToViewListDto create(DivisionToCreateDto dto) {
         Division entity = new Division();
@@ -107,12 +75,7 @@ public class DivisionService {
 
         Division saved = divisionRepository.save(entity);
 
-        DivisionToViewListDto resultado = new DivisionToViewListDto();
-        resultado.setDivisionId(saved.getId());
-        resultado.setNombre(saved.getNombre());
-        resultado.setProgramasEducativos(new ArrayList<>());
-
-        return resultado;
+        return convertirADto(saved);
     }
 
     // Actualizar una división existente
@@ -126,26 +89,27 @@ public class DivisionService {
 
         Division updated = divisionRepository.save(division);
 
-        DivisionToViewListDto resultado = new DivisionToViewListDto();
-        resultado.setDivisionId(updated.getId());
-        resultado.setNombre(updated.getNombre());
+        return convertirADto(updated);
+    }
 
-        if (updated.getProgramaEducativo() != null) {
+    // Convertir entidad a DTO
+    private DivisionToViewListDto convertirADto(Division division) {
+        DivisionToViewListDto dto = new DivisionToViewListDto();
+        dto.setDivisionId(division.getId());
+        dto.setNombre(division.getNombre());
+        dto.setImage(division.getImage());
+        dto.setActivo(division.isActivo());
+
+        if (division.getProgramaEducativo() != null) {
             List<String> programas = new ArrayList<>();
-            for (ProgramaEducativo prog : updated.getProgramaEducativo()) {
+            for (ProgramaEducativo prog : division.getProgramaEducativo()) {
                 programas.add(prog.getPrograma());
             }
-            resultado.setProgramasEducativos(programas);
+            dto.setProgramasEducativos(programas);
         } else {
-            resultado.setProgramasEducativos(new ArrayList<>());
+            dto.setProgramasEducativos(new ArrayList<>());
         }
 
-        return resultado;
+        return dto;
     }
-
-    // Test
-    public void test() {
-        System.out.println("Test");
-    }
-
 }
